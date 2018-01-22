@@ -33,7 +33,7 @@ public class PulsatorLayout extends RelativeLayout {
     public static final int INTERP_DECELERATE = 2;
     public static final int INTERP_ACCELERATE_DECELERATE = 3;
 
-    private static final int DEFAULT_COUNT = 4;
+    private static final int DEFAULT_COUNT = 2;
     private static final int DEFAULT_COLOR = Color.rgb(0, 116, 193);
     private static final int DEFAULT_DURATION = 7000;
     private static final int DEFAULT_REPEAT = INFINITE;
@@ -267,7 +267,7 @@ public class PulsatorLayout extends RelativeLayout {
 
         mCenterX = width * 0.5f;
         mCenterY = height * 0.5f;
-        mRadius = Math.min(width, height) * 0.5f;
+        mRadius = 100.0f;
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -311,19 +311,19 @@ public class PulsatorLayout extends RelativeLayout {
             long delay = index * mDuration / mCount;
 
             // setup animators
-            ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(pulseView, "ScaleX", 0f, 1f);
+            ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(pulseView, "ScaleX", 1f, 0f);
             scaleXAnimator.setRepeatCount(repeatCount);
             scaleXAnimator.setRepeatMode(ObjectAnimator.RESTART);
             scaleXAnimator.setStartDelay(delay);
             animators.add(scaleXAnimator);
 
-            ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(pulseView, "ScaleY", 0f, 1f);
+            ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(pulseView, "ScaleY", 1f, 0f);
             scaleYAnimator.setRepeatCount(repeatCount);
             scaleYAnimator.setRepeatMode(ObjectAnimator.RESTART);
             scaleYAnimator.setStartDelay(delay);
             animators.add(scaleYAnimator);
 
-            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(pulseView, "Alpha", 1f, 0f);
+            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(pulseView, "Alpha", 0f, 1f);
             alphaAnimator.setRepeatCount(repeatCount);
             alphaAnimator.setRepeatMode(ObjectAnimator.RESTART);
             alphaAnimator.setStartDelay(delay);

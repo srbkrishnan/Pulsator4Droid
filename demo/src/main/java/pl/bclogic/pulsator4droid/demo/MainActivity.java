@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         // count seek bar
         SeekBar countSeek = (SeekBar) findViewById(R.id.seek_count);
         countSeek.setOnSeekBarChangeListener(mCountChangeListener);
-        countSeek.setProgress(mPulsator.getCount() - 1);
+
 
         // duration seek bar
         SeekBar durationSeek = (SeekBar) findViewById(R.id.seek_duration);
@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    mPulsator.setCount(progress + 1);
                     mCountText.setText(String.format(Locale.US, "%d", progress + 1));
                 }
 
