@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="70dp"
+    android:layout_height="70dp">
+    <pl.bclogic.pulsator4droid.library.PulsatorLayout
+        android:id="@+id/pulsator"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        app:pulse_repeat="0"
+        app:pulse_color="#f1039a"
+        app:pulse_startFromScratch="false"
+        app:pulse_interpolator="Accelerate">
+        <View
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/circle"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+    </pl.bclogic.pulsator4droid.library.PulsatorLayout>
+</merge>

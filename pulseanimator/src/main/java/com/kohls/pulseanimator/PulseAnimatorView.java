@@ -1,4 +1,4 @@
-package pl.bclogic.pulsator4droid.library;
+package com.kohls.pulseanimator;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -15,18 +15,18 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by booncol on 04.07.2016.
- *
+ * Created by tkmajne on 1/22/18.
  */
-public class PulsatorLayout extends RelativeLayout {
 
+public class PulseAnimatorView extends RelativeLayout {
+
+    public static final int INFINITE = 0;
 
     public static final int INTERP_LINEAR = 0;
     public static final int INTERP_ACCELERATE = 1;
@@ -35,11 +35,14 @@ public class PulsatorLayout extends RelativeLayout {
 
     private static final int DEFAULT_COUNT = 2;
     private static final int DEFAULT_COLOR = Color.rgb(0, 116, 193);
-    private static final int DEFAULT_DURATION = 2000;
+    private static final int DEFAULT_DURATION = 1500;
+    private static final int DEFAULT_REPEAT = INFINITE;
     private static final boolean DEFAULT_START_FROM_SCRATCH = true;
     private static final int DEFAULT_INTERPOLATOR = INTERP_LINEAR;
 
+    private int mCount;
     private int mDuration;
+    private int mRepeat;
     private boolean mStartFromScratch;
     private int mColor;
     private int mInterpolator;
@@ -58,7 +61,7 @@ public class PulsatorLayout extends RelativeLayout {
      * @param context The Context the view is running in, through which it can access the current
      *                theme, resources, etc.
      */
-    public PulsatorLayout(Context context) {
+    public PulseAnimatorView(Context context) {
         this(context, null, 0);
     }
 
@@ -69,7 +72,7 @@ public class PulsatorLayout extends RelativeLayout {
      *                theme, resources, etc.
      * @param attrs The attributes of the XML tag that is inflating the view.
      */
-    public PulsatorLayout(Context context, AttributeSet attrs) {
+    public PulseAnimatorView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
@@ -83,26 +86,22 @@ public class PulsatorLayout extends RelativeLayout {
      *                     resource that supplies default values for the view. Can be 0 to not look
      *                     for defaults.
      */
-    public PulsatorLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PulseAnimatorView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         // get attributes
         TypedArray attr = context.getTheme().obtainStyledAttributes(
-                attrs, R.styleable.Pulsator4Droid, 0, 0);
+                attrs, R.styleable.PulseAnimatorView, 0, 0);
+
+        mCount = DEFAULT_COUNT;
         mDuration = DEFAULT_DURATION;
+        mRepeat = DEFAULT_REPEAT;
         mStartFromScratch = DEFAULT_START_FROM_SCRATCH;
         mColor = DEFAULT_COLOR;
         mInterpolator = DEFAULT_INTERPOLATOR;
 
         try {
-
-            mDuration = attr.getInteger(R.styleable.Pulsator4Droid_pulse_duration,
-                    DEFAULT_DURATION);
-            mStartFromScratch = attr.getBoolean(R.styleable.Pulsator4Droid_pulse_startFromScratch,
-                    DEFAULT_START_FROM_SCRATCH);
-            mColor = attr.getColor(R.styleable.Pulsator4Droid_pulse_color, DEFAULT_COLOR);
-            mInterpolator = attr.getInteger(R.styleable.Pulsator4Droid_pulse_interpolator,
-                    DEFAULT_INTERPOLATOR);
+            mColor = attr.getColor(R.styleable.PulseAnimatorView_pulse_color, DEFAULT_COLOR);
         } finally {
             attr.recycle();
         }
@@ -127,6 +126,16 @@ public class PulsatorLayout extends RelativeLayout {
 
         mAnimatorSet.start();
 
+        if (!mStartFromScratch) {
+            ArrayList<Animator> animators = mAnimatorSet.getChildAnimations();
+            for (Animator animator : animators) {
+                ObjectAnimator objectAnimator = (ObjectAnimator) animator;
+
+                long delay = objectAnimator.getStartDelay();
+                objectAnimator.setStartDelay(0);
+                objectAnimator.setCurrentPlayTime(mDuration - delay);
+            }
+        }
     }
 
     /**
@@ -144,7 +153,14 @@ public class PulsatorLayout extends RelativeLayout {
         return (mAnimatorSet != null && mIsStarted);
     }
 
-
+    /**
+     * Get number of pulses.
+     *
+     * @return Number of pulses
+     */
+    public int getCount() {
+        return mCount;
+    }
 
     /**
      * Get pulse duration.
@@ -155,6 +171,22 @@ public class PulsatorLayout extends RelativeLayout {
         return mDuration;
     }
 
+    /**
+     * Set number of pulses.
+     *
+     * @param count Number of pulses
+     */
+    public void setCount(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("Count cannot be negative");
+        }
+
+        if (count != mCount) {
+            mCount = count;
+            reset();
+            invalidate();
+        }
+    }
 
     /**
      * Set single pulse duration.
@@ -222,12 +254,12 @@ public class PulsatorLayout extends RelativeLayout {
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
-        int height = MeasureSpec.getSize(heightMeasureSpec) - getPaddingTop() - getPaddingBottom();
+        int width = View.MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
+        int height = View.MeasureSpec.getSize(heightMeasureSpec) - getPaddingTop() - getPaddingBottom();
 
         mCenterX = width * 0.5f;
         mCenterY = height * 0.5f;
-        mRadius = 70.0f;
+        mRadius = 75.0f;
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -251,26 +283,24 @@ public class PulsatorLayout extends RelativeLayout {
      */
     private void build() {
         // create views and animators
-        LayoutParams layoutParams = new LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT);
 
-        int repeatCount = ObjectAnimator.INFINITE;
-
+        int repeatCount = (mRepeat == INFINITE) ? ObjectAnimator.INFINITE : mRepeat;
 
         List<Animator> animators = new ArrayList<>();
-//        for (int index = 0; index < mCount; index++) {
-//            // setup view
+        for (int index = 0; index < mCount; index++) {
+            // setup view
             PulseView pulseView = new PulseView(getContext());
             pulseView.setScaleX(0);
             pulseView.setScaleY(0);
             pulseView.setAlpha(1);
 
-            addView(pulseView, 0, layoutParams);
+            addView(pulseView, index, layoutParams);
             mViews.add(pulseView);
 
-
-            long delay = mDuration /2;
+            long delay = index * mDuration / mCount;
 
             // setup animators
             ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(pulseView, "ScaleX", 0.9f,1f, 0f,1f);
@@ -285,12 +315,12 @@ public class PulsatorLayout extends RelativeLayout {
             scaleYAnimator.setStartDelay(delay);
             animators.add(scaleYAnimator);
 
-            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(pulseView, "Alpha", 0.1f, 0f, 1f,0f);
+            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(pulseView, "Alpha", 0.1f,0f, 1f,0f);
             alphaAnimator.setRepeatCount(repeatCount);
             alphaAnimator.setRepeatMode(ObjectAnimator.RESTART);
             alphaAnimator.setStartDelay(delay);
             animators.add(alphaAnimator);
-    //    }
+        }
 
         mAnimatorSet = new AnimatorSet();
         mAnimatorSet.playTogether(animators);

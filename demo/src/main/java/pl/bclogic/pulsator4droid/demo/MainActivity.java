@@ -1,79 +1,64 @@
 package pl.bclogic.pulsator4droid.demo;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.Locale;
 
+import pl.bclogic.pulsator4droid.library.PulsatorFrameLayout;
 import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    private PulsatorLayout mPulsator;
-    private TextView mCountText;
-    private TextView mDurationText;
+    FrameLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        layout= (FrameLayout) findViewById(R.id.frame_layout);
 
-        mPulsator = (PulsatorLayout) findViewById(R.id.pulsator);
-        mCountText = (TextView) findViewById(R.id.text_count);
-        mDurationText = (TextView) findViewById(R.id.text_duration);
+        RelativeLayout.LayoutParams layoutParams= new RelativeLayout.LayoutParams(getDP(30),getDP(30));
 
-        // count seek bar
-        SeekBar countSeek = (SeekBar) findViewById(R.id.seek_count);
-        countSeek.setOnSeekBarChangeListener(mCountChangeListener);
+        Pulselayout pL= new Pulselayout(this, Color.BLACK);
+
+        layout.addView(pL,layoutParams);
 
 
-        // duration seek bar
-        SeekBar durationSeek = (SeekBar) findViewById(R.id.seek_duration);
-        durationSeek.setOnSeekBarChangeListener(mDurationChangeListener);
-        durationSeek.setProgress(mPulsator.getDuration() / 100);
+/*
+        ViewTreeObserver vto = layout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                    layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                } else {
+                    layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+                PulsatorFrameLayout pulse= new PulsatorFrameLayout(MainActivity.this);
+                int width  = layout.getMeasuredWidth();
+                int height = layout.getMeasuredHeight();
+                pulse.setPosition(width,height);
+                layout.addView(pulse);
+                pulse.start();
 
-        // start pulsator
-        mPulsator.start();
+            }
+        });*/
+
+
+    }
+    public int getDP(int px){
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        return (int) ((px/displayMetrics.density)+0.5);
     }
 
-    private final SeekBar.OnSeekBarChangeListener mCountChangeListener
-            = new SeekBar.OnSeekBarChangeListener() {
-
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    mCountText.setText(String.format(Locale.US, "%d", progress + 1));
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-
-            };
-
-    private final SeekBar.OnSeekBarChangeListener mDurationChangeListener
-            = new SeekBar.OnSeekBarChangeListener() {
-
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    mPulsator.setDuration(progress * 100);
-                    mDurationText.setText(String.format(
-                            Locale.US, "%.1f", progress * 0.1f));
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-
-            };
 
 }

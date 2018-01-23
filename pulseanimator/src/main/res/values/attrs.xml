@@ -1,0 +1,7 @@
+<resources>
+    <declare-styleable name="PulseAnimatorView">
+        <attr name="pulse_color" format="color"/>
+        <attr name="posX" format="float"/>
+        <attr name="posY" format="float"/>
+    </declare-styleable>
+</resources>
