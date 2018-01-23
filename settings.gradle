@@ -1,1 +1,1 @@
-include ':demo', ':pulsator4droid', ':pulseanimator'
+include ':demo', ':pulsator4droid'

@@ -1,10 +1,15 @@
 package pl.bclogic.pulsator4droid.demo;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -18,19 +23,31 @@ import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    FrameLayout layout;
+    private PulsatorLayout mPulsator;
+    private RelativeLayout layout;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        layout= (FrameLayout) findViewById(R.id.frame_layout);
+//        mPulsator = (PulsatorLayout) findViewById(R.id.pulsator);
+//        mPulsator.start();
+        layout= (RelativeLayout) findViewById(R.id.relative);
+        PulsatorLayout pulse= new PulsatorLayout(this);
+        pulse.setColor(ContextCompat.getColor(this,R.color.colorAccent));
+        Log.d("DP to Pixel", "onCreate: "+dp2px(getResources(),50));
 
-        RelativeLayout.LayoutParams layoutParams= new RelativeLayout.LayoutParams(getDP(30),getDP(30));
+        PulsatorLayout.LayoutParams param= new PulsatorLayout.LayoutParams(dp2px(getResources(),50),dp2px(getResources(),50));
+        param.leftMargin=dp2px(getResources(),25);
+        param.topMargin=dp2px(getResources(),25);
+/*        param.leftMargin=50;
+        param.topMargin=50;*/
+        pulse.setLayoutParams(param);
 
-        Pulselayout pL= new Pulselayout(this, Color.BLACK);
-
-        layout.addView(pL,layoutParams);
+        layout.addView(pulse);
+        pulse.start();
 
 
 /*
@@ -55,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    public int getDP(int px){
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        return (int) ((px/displayMetrics.density)+0.5);
+
+    public static int dp2px(Resources resource, int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,   dp,resource.getDisplayMetrics());
     }
 
 

@@ -4,11 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -16,7 +18,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,19 +27,15 @@ import java.util.List;
  * Created by booncol on 04.07.2016.
  *
  */
-public class PulsatorLayout extends RelativeLayout {
-
-
-    public static final int INTERP_LINEAR = 0;
+public class PulsatorLayout extends FrameLayout {
     public static final int INTERP_ACCELERATE = 1;
     public static final int INTERP_DECELERATE = 2;
     public static final int INTERP_ACCELERATE_DECELERATE = 3;
 
-    private static final int DEFAULT_COUNT = 2;
     private static final int DEFAULT_COLOR = Color.rgb(0, 116, 193);
     private static final int DEFAULT_DURATION = 2000;
     private static final boolean DEFAULT_START_FROM_SCRATCH = true;
-    private static final int DEFAULT_INTERPOLATOR = INTERP_LINEAR;
+    private static final int DEFAULT_INTERPOLATOR = INTERP_ACCELERATE;
 
     private int mDuration;
     private boolean mStartFromScratch;
@@ -47,7 +45,8 @@ public class PulsatorLayout extends RelativeLayout {
     private final List<View> mViews = new ArrayList<>();
     private AnimatorSet mAnimatorSet;
     private Paint mPaint;
-    private float mRadius;
+    private float mOuterRadius;
+    private float mInnerRadius;
     private float mCenterX;
     private float mCenterY;
     private boolean mIsStarted;
@@ -96,13 +95,8 @@ public class PulsatorLayout extends RelativeLayout {
 
         try {
 
-            mDuration = attr.getInteger(R.styleable.Pulsator4Droid_pulse_duration,
-                    DEFAULT_DURATION);
-            mStartFromScratch = attr.getBoolean(R.styleable.Pulsator4Droid_pulse_startFromScratch,
-                    DEFAULT_START_FROM_SCRATCH);
             mColor = attr.getColor(R.styleable.Pulsator4Droid_pulse_color, DEFAULT_COLOR);
-            mInterpolator = attr.getInteger(R.styleable.Pulsator4Droid_pulse_interpolator,
-                    DEFAULT_INTERPOLATOR);
+
         } finally {
             attr.recycle();
         }
@@ -220,16 +214,20 @@ public class PulsatorLayout extends RelativeLayout {
         }
     }
 
+
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
         int height = MeasureSpec.getSize(heightMeasureSpec) - getPaddingTop() - getPaddingBottom();
 
         mCenterX = width * 0.5f;
         mCenterY = height * 0.5f;
-        mRadius = 70.0f;
 
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    }
+    public static float dp2px(Resources resource, int dp) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,   dp,resource.getDisplayMetrics());
     }
 
     /**
@@ -251,24 +249,27 @@ public class PulsatorLayout extends RelativeLayout {
      */
     private void build() {
         // create views and animators
+        mOuterRadius = dp2px(getResources(),23);
+        mInnerRadius=dp2px(getResources(),13);
         LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
+       // layoutParams.addRule(CENTER_IN_PARENT);
 
         int repeatCount = ObjectAnimator.INFINITE;
 
 
-        List<Animator> animators = new ArrayList<>();
-//        for (int index = 0; index < mCount; index++) {
-//            // setup view
+            List<Animator> animators = new ArrayList<>();
             PulseView pulseView = new PulseView(getContext());
             pulseView.setScaleX(0);
             pulseView.setScaleY(0);
             pulseView.setAlpha(1);
-
             addView(pulseView, 0, layoutParams);
             mViews.add(pulseView);
 
+            CircleView circleView= new CircleView(getContext());
+            addView(circleView,1,layoutParams);
+            mViews.add(circleView);
 
             long delay = mDuration /2;
 
@@ -290,7 +291,6 @@ public class PulsatorLayout extends RelativeLayout {
             alphaAnimator.setRepeatMode(ObjectAnimator.RESTART);
             alphaAnimator.setStartDelay(delay);
             animators.add(alphaAnimator);
-    //    }
 
         mAnimatorSet = new AnimatorSet();
         mAnimatorSet.playTogether(animators);
@@ -350,9 +350,21 @@ public class PulsatorLayout extends RelativeLayout {
 
         @Override
         protected void onDraw(Canvas canvas) {
-            canvas.drawCircle(mCenterX, mCenterY, mRadius, mPaint);
+            canvas.drawCircle(mCenterX, mCenterY, mOuterRadius, mPaint);
         }
 
+    }
+    private class  CircleView extends View{
+
+
+        public CircleView(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            canvas.drawCircle(mCenterX,mCenterY, mInnerRadius,mPaint);
+        }
     }
 
     private final Animator.AnimatorListener mAnimatorListener = new Animator.AnimatorListener() {

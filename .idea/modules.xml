@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/Pulsator4Droid.iml" filepath="$PROJECT_DIR$/Pulsator4Droid.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/pulsator4droid/pulsator4droid.iml" filepath="$PROJECT_DIR$/pulsator4droid/pulsator4droid.iml" />
-      <module fileurl="file://$PROJECT_DIR$/pulseanimator/pulseanimator.iml" filepath="$PROJECT_DIR$/pulseanimator/pulseanimator.iml" />
     </modules>
   </component>
 </project>

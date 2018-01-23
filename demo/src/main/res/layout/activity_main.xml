@@ -6,29 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="pl.bclogic.pulsator4droid.demo.MainActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/relative">
 
-<!--
-    <pl.bclogic.pulsator4droid.library.PulsatorLayout
+    </RelativeLayout>
+
+<!--    <pl.bclogic.pulsator4droid.library.PulsatorLayout
         android:id="@+id/pulsator"
         android:layout_height="70dp"
         android:layout_width="70dp"
-        app:pulse_repeat="0"
-        app:pulse_color="@color/colorAccent"
-        app:pulse_startFromScratch="false"
-        app:pulse_interpolator="Accelerate">
-        <View
+        app:pulse_color="@color/colorAccent">
+&lt;!&ndash;        <View
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:background="@drawable/circle"
             android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true" />&ndash;&gt;
     </pl.bclogic.pulsator4droid.library.PulsatorLayout>-->
 
-    <FrameLayout
-        android:id="@+id/frame_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </FrameLayout>
 
 </RelativeLayout>
