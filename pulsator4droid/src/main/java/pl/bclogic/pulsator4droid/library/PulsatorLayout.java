@@ -51,6 +51,8 @@ public class PulsatorLayout extends FrameLayout {
     private float mCenterY;
     private boolean mIsStarted;
 
+    private OnClickListener mListener;
+
     /**
      * Simple constructor to use when creating a view from code.
      *
@@ -269,6 +271,7 @@ public class PulsatorLayout extends FrameLayout {
 
             CircleView circleView= new CircleView(getContext());
             addView(circleView,1,layoutParams);
+
             mViews.add(circleView);
 
             long delay = mDuration /2;
@@ -389,5 +392,9 @@ public class PulsatorLayout extends FrameLayout {
         }
 
     };
+
+    interface OnClickListener {
+        void onClick(Object o);
+    }
 
 }

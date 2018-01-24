@@ -1,24 +1,13 @@
 package pl.bclogic.pulsator4droid.demo;
 
-import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
-import java.util.Locale;
-
-import pl.bclogic.pulsator4droid.library.PulsatorFrameLayout;
 import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
 public class MainActivity extends AppCompatActivity {

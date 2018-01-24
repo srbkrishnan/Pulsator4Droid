@@ -1,14 +1,17 @@
 package pl.bclogic.pulsator4droid.sampleapplication;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -19,6 +22,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import pl.bclogic.pulsator4droid.demo.R;
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
 public class ImageViewActivity extends AppCompatActivity {
 
@@ -26,7 +30,12 @@ public class ImageViewActivity extends AppCompatActivity {
     RelativeLayout layout;
     private Target t;
     private TextView tv;
-
+    private static float[][] hotpots= {
+            {0.5f,0.5f}
+    };
+    public static int dp2px(Resources resource, int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,   dp,resource.getDisplayMetrics());
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,48 +62,30 @@ public class ImageViewActivity extends AppCompatActivity {
 
                         RelativeLayout rl= new RelativeLayout(ImageViewActivity.this);
                         RelativeLayout.LayoutParams param=new RelativeLayout.LayoutParams(displayedWidth,displayedHeight);
-
-
                         param.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                         rl.setLayoutParams(param);
-                        rl.setGravity(Gravity.CENTER);
-                        rl.setBackgroundColor(Color.parseColor("#A4000000"));
+                        rl.setGravity(Gravity.NO_GRAVITY);
+                        //rl.setBackgroundColor(Color.parseColor("#A4000000"));
                         layout.addView(rl);
+                        setupHotSpots(rl,displayedWidth,displayedHeight);
                     }
 
                     @Override
                     public void onError() {
-
                     }
                 });
-/*        t= new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                int width= layout.getWidth();
-                int height= layout.getHeight();
-                float scale= Math.min((float)width/(float)bitmap.getWidth() , (float)height/(float)bitmap.getHeight() );
-                Log.d(TAG, "onBitmapLoaded: w : "+ width +" h: "+height);
-                Log.d(TAG, "onBitmapLoaded: w : "+ bitmap.getWidth() +" h: "+bitmap.getHeight());
-                tv.setText("onBitmapLoaded: Scale : "+scale);
-//                RelativeLayout image_container= new RelativeLayout(ImageViewActivity.this);
-//
-//                RelativeLayout.LayoutParams param= new RelativeLayout.LayoutParams()
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                Log.d(TAG, "onBitmapFailed: ");
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                Log.d(TAG, "onPrepareLoad: ");
-
-            }
-        };*/
-
-
-
+    }
+    private void setupHotSpots(RelativeLayout rl, int displayedWidth, int displayedHeight) {
+    for(float[] point : hotpots){
+        PulsatorLayout pulse= new PulsatorLayout(this);
+        pulse.setColor(ContextCompat.getColor(this,R.color.colorAccent));
+        PulsatorLayout.LayoutParams param= new PulsatorLayout.LayoutParams(dp2px(getResources(),50),dp2px(getResources(),50));
+        param.leftMargin= (int) (displayedWidth*point[0]) -dp2px(getResources(),25);
+        param.topMargin= (int) (displayedHeight*point[1])-dp2px(getResources(),25);
+        pulse.setLayoutParams(param);
+        rl.addView(pulse);
+        pulse.start();
+    }
     }
 
     @Override
